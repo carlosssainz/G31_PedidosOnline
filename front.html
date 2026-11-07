@@ -17,18 +17,17 @@
 [hidden]{display:none!important}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 main{max-width:960px;margin:0 auto;padding:20px 16px 8px}
-h1,h2,h3{font-family:Georgia,"Times New Roman",serif;line-height:1.2}
+h1,h2,h3{line-height:1.2}
 h1{font-size:1.7rem;margin:0}
 h3{margin:.2rem 0 .5rem;font-size:1.05rem}
 .top{display:flex;justify-content:space-between;align-items:baseline;border-bottom:3px solid var(--acc);padding-bottom:8px;margin-bottom:12px;gap:12px}
-.tag{font-weight:700;color:var(--prim);border:1px solid var(--prim);border-radius:4px;padding:0 8px;font-size:.85rem}
+.tag{font-weight:700;color:var(--prim);border:1px solid var(--prim);padding:0 8px;font-size:.85rem}
 nav{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;padding-bottom:10px;border-bottom:1px solid var(--line)}
-.btn,button{font:inherit;color:var(--fg);background:transparent;border:1px solid var(--line);border-radius:6px;padding:6px 12px;cursor:pointer;text-decoration:none;display:inline-block}
-.btn:hover,button:hover:not(:disabled){border-color:var(--prim)}
+.btn,button{font:inherit;color:var(--fg);background:transparent;border:1px solid var(--line);padding:6px 12px;cursor:pointer;text-decoration:none;display:inline-block}
 .prim{background:var(--prim);color:var(--prim-fg);border-color:var(--prim);font-weight:600}
 button:disabled{opacity:.45;cursor:not-allowed}
 a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
-input,select,textarea{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 8px;max-width:100%}
+input,select,textarea{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);padding:6px 8px;max-width:100%}
 label{display:block;font-size:.92rem;color:var(--muted);margin-bottom:2px}
 .campos{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px 24px;margin:12px 0}
 .campos input,.campos select{width:100%}
@@ -40,22 +39,22 @@ table{border-collapse:collapse;width:100%;margin:8px 0}
 th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
 th{background:var(--head);font-weight:600;white-space:nowrap}
 td.num,th.num{text-align:right;white-space:nowrap}
-tr.cat td{background:var(--head);font-family:Georgia,serif;font-weight:600}
-.msg{padding:9px 12px;border-radius:6px;margin:8px 0;border:1px solid}
+tr.cat td{background:var(--head);font-weight:600}
+.msg{padding:9px 12px;margin:8px 0;border:1px solid}
 .msg.ok{background:var(--ok-bg);color:var(--ok);border-color:var(--ok)}
 .msg.err{background:var(--err-bg);color:var(--err);border-color:var(--err)}
 .msg.warn{background:var(--warn-bg);border-color:var(--acc)}
-.nota{background:var(--note);color:var(--note-fg);padding:6px 10px;border:1px solid var(--line);border-radius:4px;font-size:.85rem;margin:24px 0 8px}
-.caja{border:1px solid var(--line);border-radius:6px;padding:12px 14px;margin:10px 0}
+.nota{background:var(--note);color:var(--note-fg);padding:6px 10px;border:1px solid var(--line);font-size:.85rem;margin:24px 0 8px}
+.caja{border:1px solid var(--line);padding:12px 14px;margin:10px 0}
 .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
 .cols .caja{margin:0}
 .lista{margin:0;padding-left:1.2rem}
 .lista li{margin:.4rem 0}
 small,.suave{color:var(--muted)}
-.hero{border:1px dashed var(--line);border-radius:6px;padding:48px 20px;text-align:center;margin:12px 0 18px}
+.hero{padding:48px 20px;text-align:center;margin:12px 0 18px}
 .hero h2{font-size:1.6rem;margin:.2rem 0}
 .total{font-size:1.15rem;font-weight:700;margin:10px 0}
-.nuevo{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:6px 0 10px;padding:8px;border:1px dashed var(--line);border-radius:6px}
+.nuevo{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:6px 0 10px;padding:8px;border:1px dashed var(--line)}
 .nuevo input,.nuevo select{width:100%}
 .fila-plato{margin:6px 0}
 .fila-plato>select{width:100%}
@@ -70,12 +69,13 @@ footer{max-width:1100px}
 section:has(> nav){display:grid;grid-template-columns:190px minmax(0,1fr);column-gap:28px}
 section:has(> nav) > *{grid-column:2}
 section:has(> nav) > .top{grid-column:1 / -1}
-section:has(> nav) > nav{grid-column:1;grid-row:2 / span 20;align-self:start;flex-direction:column;flex-wrap:nowrap;margin:0;padding:0 16px 0 0;border-bottom:0;border-right:1px solid var(--line)}
+section:has(> nav) > nav{grid-column:1;grid-row:2 / span 20;align-self:start;flex-direction:column;flex-wrap:nowrap;margin:0;padding:0 16px 0 0;border-bottom:0;}
 nav .btn{text-align:left}
 @media (max-width:700px){
   section:has(> nav){display:block}
   section:has(> nav) > nav{flex-direction:row;flex-wrap:wrap;padding:0 0 10px;margin-bottom:14px;border-right:0;border-bottom:1px solid var(--line)}
 }
+
 </style>
 </head>
 <body>
