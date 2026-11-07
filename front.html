@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sabor del Himalaya</title>
+<style>
+:root{
+  color-scheme: light dark;
+  --bg:#fbfbfd; --fg:#1d2233; --muted:#5d6479; --line:#c9cde0; --head:#eceef6;
+  --prim:#2f3f86; --prim-fg:#fff; --acc:#e0a526; --note:#fff6d1; --note-fg:#5c4a0a;
+  --ok:#17663a; --ok-bg:#e3f4e9; --err:#9c1d1d; --err-bg:#fbe5e5; --warn-bg:#fff1cf;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#15182a; --fg:#e8eaf5; --muted:#a2a8c2; --line:#3a4066; --head:#20253f;
+    --prim:#8ea2f0; --prim-fg:#10142a; --acc:#f0bd4a; --note:#3a3414; --note-fg:#f0dd9a;
+    --ok:#7fdc9d; --ok-bg:#16301f; --err:#ff9a9a; --err-bg:#3a1c1c; --warn-bg:#3a3014;
+  }
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:960px;margin:0 auto;padding:20px 16px 8px}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;line-height:1.2}
+h1{font-size:1.7rem;margin:0}
+h3{margin:.2rem 0 .5rem;font-size:1.05rem}
+.top{display:flex;justify-content:space-between;align-items:baseline;border-bottom:3px solid var(--acc);padding-bottom:8px;margin-bottom:12px;gap:12px}
+.tag{font-weight:700;color:var(--prim);border:1px solid var(--prim);border-radius:4px;padding:0 8px;font-size:.85rem}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.btn,button{font:inherit;color:var(--fg);background:transparent;border:1px solid var(--line);border-radius:6px;padding:6px 12px;cursor:pointer;text-decoration:none;display:inline-block}
+.btn:hover,button:hover:not(:disabled){border-color:var(--prim)}
+.prim{background:var(--prim);color:var(--prim-fg);border-color:var(--prim);font-weight:600}
+button:disabled{opacity:.45;cursor:not-allowed}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+input,select,textarea{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 8px;max-width:100%}
+label{display:block;font-size:.92rem;color:var(--muted);margin-bottom:2px}
+.campos{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px 24px;margin:12px 0}
+.campos input,.campos select{width:100%}
+.campos .ancho{grid-column:1/-1}
+.acciones{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.fila{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin:8px 0}
+.tabla-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;margin:8px 0}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--head);font-weight:600;white-space:nowrap}
+td.num,th.num{text-align:right;white-space:nowrap}
+tr.cat td{background:var(--head);font-family:Georgia,serif;font-weight:600}
+.msg{padding:9px 12px;border-radius:6px;margin:8px 0;border:1px solid}
+.msg.ok{background:var(--ok-bg);color:var(--ok);border-color:var(--ok)}
+.msg.err{background:var(--err-bg);color:var(--err);border-color:var(--err)}
+.msg.warn{background:var(--warn-bg);border-color:var(--acc)}
+.nota{background:var(--note);color:var(--note-fg);padding:6px 10px;border:1px solid var(--line);border-radius:4px;font-size:.85rem;margin:24px 0 8px}
+.caja{border:1px solid var(--line);border-radius:6px;padding:12px 14px;margin:10px 0}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.cols .caja{margin:0}
+.lista{margin:0;padding-left:1.2rem}
+.lista li{margin:.4rem 0}
+small,.suave{color:var(--muted)}
+.hero{border:1px dashed var(--line);border-radius:6px;padding:48px 20px;text-align:center;margin:12px 0 18px}
+.hero h2{font-size:1.6rem;margin:.2rem 0}
+.total{font-size:1.15rem;font-weight:700;margin:10px 0}
+.nuevo{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:6px 0 10px;padding:8px;border:1px dashed var(--line);border-radius:6px}
+.nuevo input,.nuevo select{width:100%}
+.fila-plato{margin:6px 0}
+.fila-plato>select{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chips button[aria-pressed="true"]{background:var(--prim);color:var(--prim-fg);border-color:var(--prim)}
+footer{max-width:960px;margin:0 auto;padding:12px 16px 28px;font-size:.85rem;color:var(--muted);border-top:1px solid var(--line)}
+footer input{width:260px;font-size:.85rem}
+footer button{font-size:.85rem;padding:3px 10px}
+</style>
+</head>
+<body>
+<main id="app" aria-live="polite"></main>
+<footer id="pie"></footer>
+
+<script>
+"use strict";
+/* ------------------------------------------------------------------ utilidades */
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const eur = n => Number(n).toLocaleString("es-ES", {style: "currency", currency: "EUR"});
+const hoy = () => new Date().toLocaleDateString("sv-SE");              // AAAA-MM-DD en hora local
+const fechaCorta = iso => `${iso.slice(8,10)}/${iso.slice(5,7)} ${iso.slice(11,16)}`;
+const mmss = s => `${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`;
+const jparse = (t, d) => { try { return JSON.parse(t) ?? d; } catch { return d; } };
+
+const mem = {};
+const store = {
+  get(k){ try { return sessionStorage.getItem(k) ?? mem[k] ?? null; } catch { return mem[k] ?? null; } },
+  set(k, v){ mem[k] = v; try { sessionStorage.setItem(k, v); } catch {} },
+  del(k){ delete mem[k]; try { sessionStorage.removeItem(k); } catch {} }
+};
+
+const CATS = [["entrante","Entrantes"],["ensalada","Ensaladas"],["tandoori","Tandoori"],["curry","Curries"],
+              ["arroz","Arroces"],["postre","Postres"],["bebida","Bebidas"]];
+const NOMBRE_CAT = Object.fromEntries(CATS.map(([k, v]) => [k, v]));
+const SIGUIENTE = {"Recibido": "En preparación", "En preparación": "Entregado"};
+
+/* ------------------------------------------------------------------ estado */
+const S = {
+  api:   store.get("api") || "http://127.0.0.1:8000",
+  token: store.get("token"),
+  user:  jparse(store.get("user"), null),
+  cart:  jparse(store.get("cart"), []),
+  flash: null,
+  timers: [],
+  menuFecha: null,
+  reg: null
+};
+const rol = () => S.user?.rol;
+const homeDe = r => ({cliente:"carta", chef:"chef", administrador:"admin", personal:"personal"}[r] || "");
+const saveCart = () => store.set("cart", JSON.stringify(S.cart));
+const app = $("#app");
+
+function logoutLocal(){
+  S.token = null; S.user = null; S.cart = [];
+  ["token","user","cart"].forEach(store.del);
+}
+
+/* ------------------------------------------------------------------ API */
+async function api(method, path, body){
+  let r;
+  try {
+    const headers = {};
+    if (body !== undefined) headers["Content-Type"] = "application/json";
+    if (S.token) headers["Authorization"] = "Bearer " + S.token;
+    r = await fetch(S.api + path, {method, headers, body: body !== undefined ? JSON.stringify(body) : undefined});
+  } catch {
+    throw new Error(`No se puede conectar con el backend en ${S.api}. ¿Está arrancado (python main.py)?`);
+  }
+  let j;
+  try { j = await r.json(); } catch { throw new Error("Respuesta inválida del servidor"); }
+  if (!j.ok) {
+    if (r.status === 401 && S.token) { logoutLocal(); pintaPie(); }
+    throw new Error(j.error || "Error desconocido");
+  }
+  return j.datos;
+}
+
+/* ------------------------------------------------------------------ maquetación común */
+function nav(){
+  const b = (h, t) => `<a class="btn" href="#/${h}">${t}</a>`;
+  const salir = b("salir", "Salir");
+  const r = rol();
+  let it;
+  if (!r)                     it = [b("carta","Carta"), b("menu","Menú del día"), b("login","Iniciar sesión"), b("registro","Registrarse")];
+  else if (r === "cliente")   it = [b("carta","Carta"), b("menu","Menú del día"),
+                                    b("pedido", "Hacer pedido" + (S.cart.length ? ` (${S.cart.length})` : "")),
+                                    b("pedidos","Mis pedidos"), salir];
+  else if (r === "chef")      it = [b("chef","Menú diario"), b("admin","Almacén de platos"), salir];
+  else if (r === "administrador") it = [b("admin","Carta"), b("facturacion","Facturación"), salir];
+  else                        it = [b("personal","Pedidos"), salir];
+  return it.join("");
+}
+const refreshNav = () => { const n = $("nav"); if (n) n.innerHTML = nav(); };
+
+function pantalla(id, titulo, cuerpo, nota, conNav = true){
+  return `<section>
+    <div class="top"><h1>${esc(titulo)}</h1><span class="tag" title="Pantalla del esquema">${id}</span></div>
+    ${conNav ? `<nav>${nav()}</nav>` : ""}
+    <div id="estado"></div>
+    ${cuerpo}
+    ${nota ? `<p class="nota">${esc(nota)}</p>` : ""}
+  </section>`;
+}
+function msg(t, k = "ok"){
+  const e = $("#estado");
+  if (e) e.innerHTML = t ? `<div class="msg ${k}" role="${k === "err" ? "alert" : "status"}">${esc(t)}</div>` : "";
+}
+function pinta(html){
+  app.innerHTML = html;
+  if (S.flash) { msg(S.flash.t, S.flash.k); S.flash = null; }
+}
+function go(h){
+  if (location.hash === "#/" + h || (h === "" && (location.hash === "" || location.hash === "#/"))) route();
+  else location.hash = "#/" + h;
+}
+function pintaPie(){
+  $("#pie").innerHTML = `Backend: <input id="api" value="${esc(S.api)}" aria-label="URL del backend">
+    <button id="apiOk" type="button">Guardar</button>
+    ${S.user ? ` &nbsp; Sesión: <b>${esc(S.user.login)}</b> (${esc(S.user.rol)})` : " &nbsp; Sin sesión"}`;
+  $("#apiOk").onclick = () => {
+    S.api = $("#api").value.trim().replace(/\/+$/, "") || "http://127.0.0.1:8000";
+    store.set("api", S.api); route();
+  };
+}
+
+/* ------------------------------------------------------------------ router */
+const RUTAS = {
+  "":            {v: vInicio},
+  carta:         {v: vCarta},
+  menu:          {v: vMenu},
+  login:         {v: vLogin},
+  registro:      {v: vRegistro},
+  "registro-ok": {v: vRegistroOk},
+  activar:       {v: vActivar},
+  admin:         {roles: ["administrador","chef"], v: vAdmin},
+  plato:         {roles: ["administrador","chef"], v: vPlato},
+  baja:          {roles: ["administrador"],        v: vBaja},
+  chef:          {roles: ["chef"],                 v: vChef},
+  pedido:        {roles: ["cliente"],              v: vPedido},
+  resumen:       {roles: ["cliente"],              v: vResumen},
+  pedidos:       {roles: ["cliente"],              v: vPedidos},
+  personal:      {roles: ["personal"],             v: vPersonal},
+  modificar:     {roles: ["cliente"],              v: () => vCiclo2("P16", "Modificar / cancelar pedido", "HU-12 y HU-13") },
+  facturacion:   {roles: ["administrador"],        v: () => vCiclo2("P17", "Facturación diaria (Administrador)", "HU-15") },
+  salir:         {v: () => { logoutLocal(); go(""); }}
+};
+
+async function route(){
+  S.timers.forEach(clearInterval); S.timers = [];
+  const raw = location.hash.replace(/^#\/?/, "");
+  const [path, query = ""] = raw.split("?");
+  const [name, ...args] = path.split("/");
+  const r = RUTAS[name];
+  if (!r) { location.hash = "#/"; return; }
+  if (r.roles && !r.roles.includes(rol())) {
+    S.flash = {t: rol() ? "No tiene permisos para esa pantalla." : "Inicie sesión para continuar.", k: "err"};
+    location.hash = rol() ? "#/" + homeDe(rol()) : "#/login";
+    return;
+  }
+  try { await r.v(args, new URLSearchParams(query)); }
+  catch (e) { pinta(pantalla("", "No se pudo cargar la pantalla", `<p class="msg err">${esc(e.message)}</p>`)); }
+  pintaPie();
+  window.scrollTo(0, 0);
+}
+window.addEventListener("hashchange", route);
+
+/* ------------------------------------------------------------------ P1 Inicio */
+function vInicio(){
+  const r = rol();
+  const botones = r
+    ? `<a class="btn prim" href="#/${homeDe(r)}">Ir a mi panel</a>`
+    : `<a class="btn prim" href="#/carta">Ver carta</a> <a class="btn prim" href="#/menu">Ver menú del día</a>
+       <a class="btn" href="#/login">Iniciar sesión</a> <a class="btn" href="#/registro">Registrarse</a>`;
+  pinta(pantalla("P1", "Sabor del Himalaya - Inicio", `
+    <div class="hero"><h2>Cocina nepalí a domicilio</h2>
+      <p class="suave">Consulte la carta, el menú del día y haga su pedido desde casa.</p></div>
+    <div class="acciones">${botones}</div>`,
+    "Pantalla pública. Acceso a P6 (carta), P7 (menú), P5 (login) y P2 (registro)."));
+}
+
+/* ------------------------------------------------------------------ P2 / P3 / P4 cuentas */
+function vRegistro(){
+  pinta(pantalla("P2", "Registro de nuevo cliente", `
+    <form id="f" novalidate>
+      <div class="campos">
+        <div><label for="nombre">Nombre completo</label><input id="nombre" name="nombre" autocomplete="name"></div>
+        <div><label for="login">Nombre de usuario (login)</label><input id="login" name="login" autocomplete="username"></div>
+        <div><label for="direccion">Dirección postal de entrega</label><input id="direccion" name="direccion" autocomplete="street-address"></div>
+        <div><label for="password">Contraseña (mínimo 6 caracteres)</label><input id="password" name="password" type="password" autocomplete="new-password"></div>
+        <div><label for="correo">Correo electrónico</label><input id="correo" name="correo" type="email" autocomplete="email"></div>
+      </div>
+      <div class="acciones"><button class="prim" type="submit">Registrarme</button>
+        <button type="button" id="cancel">Cancelar</button></div>
+    </form>`, "HU-01. Al confirmar se va a P3 y se envía el correo con el enlace de activación.", false));
+  $("#cancel").onclick = () => go("");
+  $("#f").onsubmit = async e => {
+    e.preventDefault();
+    try {
+      const d = Object.fromEntries(new FormData(e.target));
+      const r = await api("POST", "/registro", d);
+      S.reg = {...r, correo: d.correo};
+      go("registro-ok");
+    } catch (x) { msg(x.message, "err"); }
+  };
+}
+
+function vRegistroOk(){
+  pinta(pantalla("P3", "Registro realizado", `
+    <div class="caja"><h3>¡Cuenta creada correctamente!</h3>
+      <p>Te hemos enviado un correo ${S.reg ? `a <b>${esc(S.reg.correo)}</b> ` : ""}con un enlace de activación.</p>
+      <p>Estado de la cuenta: ${esc(S.reg?.estado || "Pendiente")} de activación</p></div>
+    <p class="suave">Versión de pruebas: el correo no se envía de verdad; el enlace queda en la bandeja simulada del servidor.
+      Con el token puede activar la cuenta en <a href="#/activar">esta pantalla</a>.</p>
+    <div class="acciones"><a class="btn prim" href="#/login">Ir a iniciar sesión</a></div>`,
+    "HU-01. Pantalla de confirmación. Siguiente: correo electrónico -> P4.", false));
+}
+
+async function vActivar(args, q){
+  const token = q.get("token");
+  let cuerpo;
+  if (token) {
+    let res;
+    try { res = {ok: true, t: (await api("GET", "/activar?token=" + encodeURIComponent(token))).mensaje}; }
+    catch (e) { res = {ok: false, t: e.message}; }
+    cuerpo = `<div class="caja"><h3>${res.ok ? "Cuenta activada. Ya puedes iniciar sesión." : "Enlace de activación no válido"}</h3>
+      ${res.ok ? "" : `<p class="msg err">${esc(res.t)}</p>`}</div>
+      <div class="acciones"><a class="btn prim" href="#/login">Ir a iniciar sesión</a></div>`;
+  } else {
+    cuerpo = `<div class="caja"><p>Abra el enlace del correo o pegue aquí el código (token) de activación.</p>
+      <form id="f" class="fila"><div><label for="t">Token</label><input id="t" size="40"></div>
+      <button class="prim" type="submit">Activar cuenta</button></form></div>`;
+  }
+  pinta(pantalla("P4", "Activación de cuenta", cuerpo, "HU-02. Se llega desde el enlace del correo (#/activar?token=XXXX). Redirige a P5.", false));
+  if (!token) $("#f").onsubmit = e => { e.preventDefault(); const t = $("#t").value.trim(); if (t) location.hash = "#/activar?token=" + encodeURIComponent(t); };
+}
+
+/* ------------------------------------------------------------------ P5 Login */
+function vLogin(){
+  pinta(pantalla("P5", "Iniciar sesión", `
+    <form id="f" novalidate style="max-width:360px">
+      <div class="campos" style="grid-template-columns:1fr">
+        <div><label for="login">Nombre de usuario (login)</label><input id="login" name="login" autocomplete="username"></div>
+        <div><label for="password">Contraseña</label><input id="password" name="password" type="password" autocomplete="current-password"></div>
+      </div>
+      <div class="acciones"><button class="prim" type="submit">Entrar</button><button type="button" id="cancel">Cancelar</button></div>
+    </form>
+    <p class="suave">Cuentas de prueba: admin / chef / personal (contraseñas en el README del backend).</p>`,
+    "HU-03. Según rol: cliente->P6/P12, chef->P11, administrador->P8, personal->P15.", false));
+  $("#cancel").onclick = () => go("");
+  $("#f").onsubmit = async e => {
+    e.preventDefault();
+    try {
+      const d = Object.fromEntries(new FormData(e.target));
+      const r = await api("POST", "/login", {login: d.login, password: d.password});
+      S.token = r.token; S.user = r.usuario;
+      store.set("token", S.token); store.set("user", JSON.stringify(S.user));
+      go(homeDe(r.rol));
+    } catch (x) { msg(x.message, "err"); }
+  };
+}
+
+/* ------------------------------------------------------------------ P6 Carta */
+async function vCarta(){
+  let cat = "";
+  pinta(pantalla("P6", "Carta de platos y bebidas", `
+    <div class="chips" id="chips"></div>
+    <div class="tabla-wrap"><table><thead><tr><th>Plato</th><th>Descripción</th><th class="num">Precio</th>${rol() === "cliente" ? "<th></th>" : ""}</tr></thead>
+      <tbody id="filas"><tr><td colspan="4" class="suave">Cargando…</td></tr></tbody></table></div>
+    ${!rol() ? '<p class="suave">Para hacer un pedido, <a href="#/login">inicie sesión</a> o <a href="#/registro">regístrese</a>.</p>' : ""}`,
+    "HU-04. Solo platos de la carta activos. Visible para visitantes y clientes."));
+  const pintaChips = () => {
+    $("#chips").innerHTML = [["", "Todas"], ...CATS].map(([k, t]) =>
+      `<button type="button" data-cat="${k}" aria-pressed="${k === cat}">${t}</button>`).join("");
+    $$("#chips button").forEach(b => b.onclick = () => { cat = b.dataset.cat; cargar(); });
+  };
+  const cargar = async () => {
+    pintaChips();
+    try {
+      const d = await api("GET", "/carta" + (cat ? "?categoria=" + cat : ""));
+      const cliente = rol() === "cliente";
+      const filas = Object.entries(d.carta).map(([c, lista]) =>
+        (cat ? "" : `<tr class="cat"><td colspan="${cliente ? 4 : 3}">${esc(NOMBRE_CAT[c] || c)}</td></tr>`) +
+        lista.map(p => `<tr><td>${esc(p.nombre)}</td><td>${esc(p.descripcion)}</td><td class="num">${eur(p.precio)}</td>
+          ${cliente ? `<td><button type="button" data-add="${esc(p.codigo)}" data-n="${esc(p.nombre)}" data-p="${p.precio}">Añadir</button></td>` : ""}</tr>`).join("")).join("");
+      $("#filas").innerHTML = filas || `<tr><td colspan="4" class="suave">No hay platos en esta categoría.</td></tr>`;
+      $$("[data-add]").forEach(b => b.onclick = () => {
+        const it = S.cart.find(x => x.tipo === "plato" && x.id === b.dataset.add);
+        if (it) it.cantidad++; else S.cart.push({tipo: "plato", id: b.dataset.add, nombre: b.dataset.n, precio: +b.dataset.p, cantidad: 1});
+        saveCart(); refreshNav(); msg(`${b.dataset.n} añadido al pedido.`);
+      });
+    } catch (e) { $("#filas").innerHTML = ""; msg(e.message, "err"); }
+  };
+  cargar();
+}
+
+/* ------------------------------------------------------------------ P7 Menú diario */
+function vMenu(){
+  const cliente = rol() === "cliente";
+  pinta(pantalla("P7", "Menú diario", `
+    <div class="fila"><div><label for="fecha">Fecha</label><input type="date" id="fecha" value="${S.menuFecha || hoy()}"></div>
+      <button class="prim" id="ok" type="button">Consultar</button></div>
+    <div id="menu"></div>`,
+    "HU-05. Desde aquí el cliente puede ir a P12 para pedirlo."));
+  const cargar = async () => {
+    const fecha = $("#fecha").value; S.menuFecha = fecha;
+    const cont = $("#menu"); msg("");
+    try {
+      const m = await api("GET", "/menu?fecha=" + encodeURIComponent(fecha));
+      if (!m.disponible) { cont.innerHTML = `<p class="msg warn">${esc(m.mensaje)}</p>`; return; }
+      const col = (slot, titulo, lista) => `<div class="caja"><h3>${titulo}</h3><ol class="lista">${lista.map(p =>
+        `<li>${cliente ? `<label style="color:inherit;font-size:inherit"><input type="radio" name="${slot}" value="${esc(p.codigo)}" data-n="${esc(p.nombre)}"> ` : ""}<b>${esc(p.nombre)}</b>
+         ${p.descripcion ? `<br><small>${esc(p.descripcion)}</small>` : ""}${cliente ? "</label>" : ""}</li>`).join("")}</ol></div>`;
+      cont.innerHTML = `<div class="cols">${col("entrante", "Entrantes (3)", m.entrantes)}${col("principal", "Principales (3)", m.principales)}${col("postre", "Postres (2)", m.postres)}</div>
+        <p><b>Bebida incluida:</b> ${esc(m.bebida)} &nbsp; <b>Precio fijo:</b> ${eur(m.precio)}</p>
+        ${cliente ? `<div class="fila"><div><label for="cant">Cantidad</label><input id="cant" type="number" min="1" value="1" style="width:80px"></div>
+          <button class="prim" id="add" type="button">Añadir menú al pedido</button></div>
+          <p class="suave">Elija un entrante, un principal y un postre.</p>` : ""}`;
+      if (cliente) $("#add").onclick = () => {
+        const op = {}, nombres = {};
+        for (const s of ["entrante", "principal", "postre"]) {
+          const r = $(`input[name="${s}"]:checked`);
+          if (!r) return msg(`Elija un ${s} del menú.`, "err");
+          op[s] = r.value; nombres[s] = r.dataset.n;
+        }
+        const n = Math.max(1, parseInt($("#cant").value) || 1);
+        const igual = x => x.tipo === "menu" && x.fecha === fecha && ["entrante","principal","postre"].every(s => x.opciones[s] === op[s]);
+        const it = S.cart.find(igual);
+        if (it) it.cantidad += n; else S.cart.push({tipo: "menu", fecha, opciones: op, nombres, precio: m.precio, cantidad: n});
+        saveCart(); refreshNav(); msg("Menú añadido al pedido.");
+      };
+    } catch (e) { cont.innerHTML = ""; msg(e.message, "err"); }
+  };
+  $("#ok").onclick = cargar;
+  cargar();
+}
+
+/* ------------------------------------------------------------------ P12 Nuevo pedido */
+const totalCarrito = () => S.cart.reduce((t, x) => t + x.precio * x.cantidad, 0);
+const itemsApi = () => S.cart.map(x => x.tipo === "plato"
+  ? {tipo: "plato", id: x.id, cantidad: x.cantidad}
+  : {tipo: "menu", fecha: x.fecha, opciones: x.opciones, cantidad: x.cantidad});
+
+function vPedido(){
+  const vacio = !S.cart.length;
+  pinta(pantalla("P12", "Nuevo pedido - seleccionar productos", vacio
+    ? `<p class="msg warn">El pedido está vacío. Añada productos desde la carta o el menú del día.</p>
+       <div class="acciones"><a class="btn prim" href="#/carta">Ir a la carta</a><a class="btn" href="#/menu">Ver menú del día</a></div>`
+    : `<div class="tabla-wrap"><table><thead><tr><th>Producto</th><th>Opciones</th><th class="num">Precio</th><th>Cantidad</th><th>Quitar</th></tr></thead><tbody>
+      ${S.cart.map((x, i) => `<tr><td>${x.tipo === "menu" ? `Menú diario (${eur(x.precio)}) · ${esc(x.fecha)}` : esc(x.nombre)}</td>
+        <td>${x.tipo === "menu" ? esc(`${x.nombres.entrante} / ${x.nombres.principal} / ${x.nombres.postre}`) : "-"}</td>
+        <td class="num">${eur(x.precio)}</td>
+        <td><input type="number" min="1" value="${x.cantidad}" data-i="${i}" style="width:70px" aria-label="Cantidad"></td>
+        <td><button type="button" data-q="${i}" aria-label="Quitar">x</button></td></tr>`).join("")}
+      </tbody></table></div>
+      <p class="total">Total provisional: <span id="tot">${eur(totalCarrito())}</span></p>
+      <div class="acciones"><a class="btn prim" href="#/resumen">Ver resumen del pedido</a><a class="btn" href="#/carta">Seguir en la carta</a></div>`,
+    "HU-10. Selección de elementos de la carta (P6) y del menú (P7). Siguiente: P13."));
+  $$("input[data-i]").forEach(inp => inp.onchange = () => {
+    S.cart[+inp.dataset.i].cantidad = Math.max(1, parseInt(inp.value) || 1);
+    inp.value = S.cart[+inp.dataset.i].cantidad; saveCart(); $("#tot").textContent = eur(totalCarrito());
+  });
+  $$("button[data-q]").forEach(b => b.onclick = () => { S.cart.splice(+b.dataset.q, 1); saveCart(); vPedido(); });
+}
+
+/* ------------------------------------------------------------------ P13 Resumen y confirmación */
+async function vResumen(){
+  if (!S.cart.length) return go("pedido");
+  let res;
+  try { res = await api("POST", "/pedidos/resumen", {items: itemsApi()}); }
+  catch (e) {
+    return pinta(pantalla("P13", "Resumen y confirmación del pedido",
+      `<p class="msg err">${esc(e.message)}</p><div class="acciones"><a class="btn prim" href="#/pedido">Volver</a></div>`,
+      "HU-10. Revise el pedido: algún producto puede haber dejado de estar disponible."));
+  }
+  const detalle = l => l.tipo === "menu" ? Object.values(l.opciones).join(" / ") : "-";
+  pinta(pantalla("P13", "Resumen y confirmación del pedido", `
+    <div class="fila"><div><label for="dir">Dirección de entrega</label><input id="dir" size="40" value="${esc(S.user?.direccion || "")}"></div></div>
+    <div class="tabla-wrap"><table><thead><tr><th>Producto</th><th>Detalle</th><th class="num">Cant.</th><th class="num">P. unit.</th><th class="num">Subtotal</th></tr></thead><tbody>
+      ${res.lineas.map(l => `<tr><td>${esc(l.descripcion)}</td><td>${esc(detalle(l))}</td><td class="num">${l.cantidad}</td>
+        <td class="num">${eur(l.precio_unitario)}</td><td class="num">${eur(l.subtotal)}</td></tr>`).join("")}
+    </tbody></table></div>
+    <p class="total" style="text-align:right">TOTAL: ${eur(res.importe_total)}</p>
+    <div class="acciones"><button class="prim" id="conf" type="button">Confirmar pedido</button><a class="btn" href="#/pedido">Volver</a></div>
+    <p class="suave">Tras confirmar: estado «Recibido» y 10 minutos para modificar o cancelar.</p>`,
+    "HU-10. Confirmar -> pedido con código único; lleva a P14."));
+  $("#conf").onclick = async () => {
+    $("#conf").disabled = true;
+    try {
+      const p = await api("POST", "/pedidos", {items: itemsApi(), direccion: $("#dir").value});
+      S.cart = []; saveCart();
+      S.flash = {t: `Pedido ${p.codigo} confirmado. Total: ${eur(p.total)}.`, k: "ok"};
+      go("pedidos");
+    } catch (e) { msg(e.message, "err"); $("#conf").disabled = false; }
+  };
+}
+
+/* ------------------------------------------------------------------ P14 Mis pedidos */
+async function vPedidos(){
+  pinta(pantalla("P14", "Mis pedidos", `<div id="tabla" class="tabla-wrap"></div>`,
+    "HU-11 (C1). Modificar -> P16 y Cancelar son HU-12/13 (Ciclo 2); pasados 10 min se deshabilitan."));
+  let datos = [], t0 = Date.now();
+  const quedan = p => Math.max(0, p.tiempo_restante_segundos - Math.floor((Date.now() - t0) / 1000));
+  const pintar = () => {
+    $("#tabla").innerHTML = datos.length ? `<table><thead><tr><th>Código</th><th>Fecha/hora</th><th>Productos</th><th class="num">Total</th><th>Estado</th><th>Tiempo restante</th><th>Acciones</th></tr></thead><tbody>
+      ${datos.map(p => { const q = p.estado === "Recibido" ? quedan(p) : 0; return `<tr><td>${esc(p.codigo)}</td><td>${fechaCorta(p.fecha_hora)}</td>
+        <td>${p.lineas.map(l => esc(`${l.descripcion} x${l.cantidad}`)).join(", ")}</td><td class="num">${eur(p.total)}</td>
+        <td>${esc(p.estado)}</td><td>${q > 0 ? `<span data-seg="${q}">${mmss(q)}</span>` : "-"}</td>
+        <td>${q > 0 ? `<button disabled title="Disponible en el Ciclo 2">Modif</button> <button disabled title="Disponible en el Ciclo 2">Canc</button>` : "-"}</td></tr>`; }).join("")}
+      </tbody></table>` : `<p class="suave">Todavía no ha hecho ningún pedido. <a href="#/carta">Ir a la carta</a></p>`;
+  };
+  const cargar = async () => {
+    try { datos = await api("GET", "/pedidos"); t0 = Date.now(); pintar(); }
+    catch (e) { msg(e.message, "err"); }
+  };
+  const tick = () => {
+    let repinta = false;
+    $$("[data-seg]").forEach(el => {
+      const left = Math.max(0, +el.dataset.seg - Math.floor((Date.now() - t0) / 1000));
+      el.textContent = mmss(left); if (left === 0) repinta = true;
+    });
+    if (repinta) pintar();
+  };
+  await cargar();
+  S.timers.push(setInterval(cargar, 8000), setInterval(tick, 1000));   // refleja los cambios del personal (P15)
+}
+
+/* ------------------------------------------------------------------ P15 Pedidos entrantes */
+async function vPersonal(){
+  pinta(pantalla("P15", "Pedidos entrantes (Personal)", `<div id="tabla" class="tabla-wrap"></div>`,
+    "HU-14. No se pueden actualizar pedidos cancelados. El cliente lo ve de inmediato en P14."));
+  const cargar = async () => {
+    try {
+      const d = await api("GET", "/personal/pedidos");
+      $("#tabla").innerHTML = d.length ? `<table><thead><tr><th>Código</th><th>Hora</th><th>Dirección</th><th>Productos</th><th>Estado</th><th>Cambiar a</th></tr></thead><tbody>
+        ${d.map(p => `<tr><td>${esc(p.codigo)}</td><td>${p.hora.slice(11, 16)}</td><td>${esc(p.direccion)}</td>
+          <td>${p.productos.map(esc).join(", ")}</td><td>${esc(p.estado)}</td>
+          <td>${SIGUIENTE[p.estado] ? `<button class="prim" data-c="${esc(p.codigo)}" data-e="${esc(SIGUIENTE[p.estado])}">${esc(SIGUIENTE[p.estado])}</button>` : "-"}</td></tr>`).join("")}
+        </tbody></table>` : `<p class="suave">No hay pedidos pendientes.</p>`;
+      $$("[data-c]").forEach(b => b.onclick = async () => {
+        try { await api("PUT", `/personal/pedidos/${encodeURIComponent(b.dataset.c)}/estado`, {estado: b.dataset.e});
+              msg(`${b.dataset.c}: ${b.dataset.e}.`); cargar(); }
+        catch (e) { msg(e.message, "err"); }
+      });
+    } catch (e) { msg(e.message, "err"); }
+  };
+  await cargar();
+  S.timers.push(setInterval(cargar, 8000));
+}
+
+/* ------------------------------------------------------------------ P8 Gestión de la carta / almacén */
+async function vAdmin(){
+  const admin = rol() === "administrador";
+  const platos = await api("GET", "/almacen/platos");
+  pinta(pantalla("P8", admin ? "Gestión de la carta (Administrador)" : "Almacén de platos (Chef)", `
+    <div class="acciones"><a class="btn prim" href="#/plato/nuevo">+ Nuevo plato/bebida</a></div>
+    <div class="tabla-wrap"><table><thead><tr><th>Código</th><th>Nombre</th><th>Categoría</th><th class="num">Precio</th><th>Estado</th><th>En carta</th>${admin ? "<th>Acciones</th>" : ""}</tr></thead><tbody>
+    ${platos.map(p => `<tr><td>${esc(p.codigo)}</td><td>${esc(p.nombre)}</td><td>${esc(NOMBRE_CAT[p.categoria] || p.categoria)}</td>
+      <td class="num">${p.precio.toFixed(2)}</td><td>${esc(p.estado)}</td><td>${p.en_carta ? "Sí" : "No"}</td>
+      ${admin ? `<td><a class="btn" href="#/plato/${esc(p.codigo)}">Editar</a>
+        ${p.estado === "Activo" ? `<a class="btn" href="#/baja/${esc(p.codigo)}">Baja</a>
+          <button type="button" data-carta="${esc(p.codigo)}" data-en="${p.en_carta}">${p.en_carta ? "Sacar de carta" : "Meter en carta"}</button>` : ""}</td>` : ""}</tr>`).join("")}
+    </tbody></table></div>`,
+    admin ? "HU-06/07/08. Nuevo -> P9; Editar -> P9; Baja -> P10. Solo el administrador modifica la carta."
+          : "El chef puede crear platos en el almacén; solo el administrador los mete en la carta."));
+  $$("[data-carta]").forEach(b => b.onclick = async () => {
+    const quitar = b.dataset.en === "true";
+    try {
+      await api(quitar ? "DELETE" : "POST", "/carta/" + encodeURIComponent(b.dataset.carta));
+      S.flash = {t: quitar ? "Plato sacado de la carta." : "Plato añadido a la carta.", k: "ok"}; route();
+    } catch (e) { msg(e.message, "err"); }
+  });
+}
+
+/* ------------------------------------------------------------------ P9 Alta / modificación */
+async function vPlato(args){
+  const nuevo = args[0] === "nuevo";
+  const admin = rol() === "administrador";
+  if (!nuevo && !admin) { S.flash = {t: "Solo el administrador puede modificar platos.", k: "err"}; return go("admin"); }
+  let p = {codigo: "", nombre: "", descripcion: "", precio: "", categoria: "entrante", estado: "Activo"};
+  if (!nuevo) {
+    p = (await api("GET", "/almacen/platos")).find(x => x.codigo === args[0]);
+    if (!p) { S.flash = {t: "El plato no existe.", k: "err"}; return go("admin"); }
+  }
+  pinta(pantalla("P9", nuevo ? "Alta de plato o bebida" : "Modificación de plato o bebida", `
+    <form id="f" novalidate>
+      <div class="campos">
+        <div><label for="cod">Código / ID</label><input id="cod" value="${nuevo ? "" : esc(p.codigo)}" placeholder="(automático)" disabled></div>
+        <div><label for="precio">Precio unitario (€)</label><input id="precio" name="precio" inputmode="decimal" value="${esc(p.precio)}"></div>
+        <div><label for="nombre">Nombre</label><input id="nombre" name="nombre" value="${esc(p.nombre)}"></div>
+        <div><label for="categoria">Categoría</label><select id="categoria" name="categoria">
+          ${CATS.map(([k, t]) => `<option value="${k}" ${k === p.categoria ? "selected" : ""}>${t}</option>`).join("")}</select></div>
+        <div><label for="descripcion">Descripción detallada</label><input id="descripcion" name="descripcion" value="${esc(p.descripcion)}"></div>
+        ${nuevo
+          ? (admin ? `<div><label for="en_carta">Carta</label><label style="color:var(--fg)"><input type="checkbox" id="en_carta" name="en_carta"> Meter en la carta al guardar</label></div>` : "")
+          : `<div><label for="estado">Estado</label><select id="estado" name="estado">
+              ${["Activo", "Retirado"].map(e => `<option ${e === p.estado ? "selected" : ""}>${e}</option>`).join("")}</select></div>`}
+      </div>
+      <div class="acciones"><button class="prim" type="submit">Guardar</button><a class="btn" href="#/admin">Cancelar</a></div>
+    </form>`,
+    "HU-06/07. Errores: precio no positivo / nombre duplicado en la categoría."));
+  $("#f").onsubmit = async e => {
+    e.preventDefault();
+    const d = Object.fromEntries(new FormData(e.target));
+    try {
+      if (nuevo) await api("POST", "/almacen/platos", {nombre: d.nombre, descripcion: d.descripcion, precio: d.precio, categoria: d.categoria, en_carta: !!$("#en_carta")?.checked});
+      else       await api("PUT", "/almacen/platos/" + encodeURIComponent(p.codigo), {nombre: d.nombre, descripcion: d.descripcion, precio: d.precio, categoria: d.categoria, estado: d.estado});
+      S.flash = {t: nuevo ? "Plato creado." : "Cambios guardados.", k: "ok"}; go("admin");
+    } catch (x) { msg(x.message, "err"); }
+  };
+}
+
+/* ------------------------------------------------------------------ P10 Confirmar baja */
+async function vBaja(args){
+  const p = (await api("GET", "/almacen/platos")).find(x => x.codigo === args[0]);
+  if (!p) { S.flash = {t: "El plato no existe.", k: "err"}; return go("admin"); }
+  pinta(pantalla("P10", "Confirmar baja de plato", `
+    <div class="caja" style="max-width:520px"><h3>¿Seguro que quieres dar de baja «${esc(p.nombre)}» (${esc(p.codigo)})?</h3>
+      <p>Dejará de estar disponible para pedidos y saldrá de la carta (se conserva en el histórico).</p>
+      <div class="acciones"><button class="prim" id="ok" type="button">Confirmar baja</button><a class="btn" href="#/admin">Cancelar</a></div></div>`,
+    "HU-08. Tras confirmar, vuelve a P8 con estado Retirado.", false));
+  $("#ok").onclick = async () => {
+    try { await api("DELETE", `/almacen/platos/${encodeURIComponent(p.codigo)}?confirmar=true`);
+          S.flash = {t: `${p.nombre} dado de baja.`, k: "ok"}; go("admin"); }
+    catch (e) { msg(e.message, "err"); }
+  };
+}
+
+/* ------------------------------------------------------------------ P11 Configurar menú diario (chef) */
+const SLOTS = [["entrante", 3, "Entrantes (elegir 3)", ["entrante", "ensalada"], "entrantes"],
+               ["principal", 3, "Principales (elegir 3)", ["tandoori", "curry", "arroz"], "principales"],
+               ["postre", 2, "Postres (elegir 2)", ["postre"], "postres"]];
+const NUEVO = "__nuevo__";
+
+async function vChef(){
+  const listas = await Promise.all(SLOTS.map(s => api("GET", "/chef/platos?tipo=" + s[0])));
+  const fila = (slot, cats, lista) => `<div class="fila-plato" data-slot="${slot}">
+    <select aria-label="Plato"><option value="">— elegir plato —</option>
+      ${lista.map(p => `<option value="${esc(p.codigo)}">${esc(p.nombre)} (${esc(NOMBRE_CAT[p.categoria] || p.categoria)}${p.en_carta ? ", en carta" : ""})</option>`).join("")}
+      <option value="${NUEVO}">+ Plato nuevo…</option></select>
+    <div class="nuevo" hidden>
+      <input data-k="nombre" placeholder="Nombre" aria-label="Nombre del plato nuevo">
+      <input data-k="descripcion" placeholder="Descripción" aria-label="Descripción">
+      <select data-k="categoria" aria-label="Categoría">${cats.map(c => `<option value="${c}">${NOMBRE_CAT[c]}</option>`).join("")}</select>
+      <input data-k="precio" placeholder="Precio (opcional)" inputmode="decimal" aria-label="Precio">
+    </div></div>`;
+  pinta(pantalla("P11", "Configurar menú diario (Chef)", `
+    <div class="fila"><div><label for="fecha">Fecha</label><input type="date" id="fecha" min="${hoy()}" value="${S.menuFecha || hoy()}"></div>
+      <div><label for="bebida">Bebida incluida (opcional)</label><input id="bebida" placeholder="Bebida incluida"></div>
+      <b>Precio fijo: 15,00 €</b></div>
+    <div class="cols" id="cols">
+      ${SLOTS.map(([slot, n, titulo, cats], i) => `<div class="caja"><h3>${titulo}</h3>
+        ${Array.from({length: n}, () => fila(slot, cats, listas[i])).join("")}</div>`).join("")}
+    </div>
+    <p class="suave">Cada plato sale del almacén (esté o no en la carta) o se crea nuevo; los nuevos quedan en el almacén para reutilizarlos.</p>
+    <div class="acciones"><button class="prim" id="pub" type="button">Publicar menú</button>
+      <button id="ret" type="button">Retirar menú de esa fecha</button></div>`,
+    "HU-09. Solo se publica con 3 entrantes + 3 principales + 2 postres."));
+  $$(".fila-plato > select").forEach(s => s.onchange = () => { s.nextElementSibling.hidden = s.value !== NUEVO; });
+  $("#pub").onclick = async () => {
+    const body = {fecha: $("#fecha").value, bebida: $("#bebida").value.trim() || undefined};
+    for (const [slot, n, , , clave] of SLOTS) {
+      body[clave] = [];
+      for (const f of $$(`.fila-plato[data-slot="${slot}"]`)) {
+        const v = $("select", f).value;
+        if (!v) return msg(`Debe elegir exactamente ${n} ${clave}.`, "err");
+        if (v === NUEVO) {
+          const d = {}; $$("[data-k]", f).forEach(i => d[i.dataset.k] = i.value.trim());
+          if (!d.precio) delete d.precio;
+          body[clave].push({nuevo: d});
+        } else body[clave].push({codigo: v});
+      }
+    }
+    try { await api("POST", "/chef/menu", body); S.menuFecha = body.fecha;
+          S.flash = {t: `Menú del ${body.fecha} publicado.`, k: "ok"}; route(); }
+    catch (e) { msg(e.message, "err"); }
+  };
+  $("#ret").onclick = async () => {
+    try { await api("DELETE", "/chef/menu?fecha=" + encodeURIComponent($("#fecha").value)); msg("Menú retirado."); }
+    catch (e) { msg(e.message, "err"); }
+  };
+}
+
+/* ------------------------------------------------------------------ P16 / P17 (Ciclo 2) */
+function vCiclo2(id, titulo, hu){
+  pinta(pantalla(id, titulo, `<p class="msg warn">Pantalla del Ciclo 2 (${hu}): el backend todavía no la implementa.</p>
+    <div class="acciones"><a class="btn" href="#/${homeDe(rol())}">Volver</a></div>`, `${hu} (Ciclo 2).`));
+}
+
+/* ------------------------------------------------------------------ arranque */
+pintaPie();
+route();
+</script>
+</body>
+</html>
