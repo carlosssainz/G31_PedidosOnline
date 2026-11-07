@@ -6,18 +6,13 @@
 <title>Sabor del Himalaya</title>
 <style>
 :root{
-  color-scheme: light dark;
-  --bg:#fbfbfd; --fg:#1d2233; --muted:#5d6479; --line:#c9cde0; --head:#eceef6;
-  --prim:#2f3f86; --prim-fg:#fff; --acc:#e0a526; --note:#fff6d1; --note-fg:#5c4a0a;
+  color-scheme: light;
+  --bg:#ffffff; --fg:#1d2233; --muted:#5d6479; --line:#c9cde0; --head:#eceef6;
+  --prim:#071555; --prim-fg:#fff; --acc:#b41c1c; --note:#8d8c8a; --note-fg:#ffffff;
   --ok:#17663a; --ok-bg:#e3f4e9; --err:#9c1d1d; --err-bg:#fbe5e5; --warn-bg:#fff1cf;
 }
-@media (prefers-color-scheme: dark){
-  :root{
-    --bg:#15182a; --fg:#e8eaf5; --muted:#a2a8c2; --line:#3a4066; --head:#20253f;
-    --prim:#8ea2f0; --prim-fg:#10142a; --acc:#f0bd4a; --note:#3a3414; --note-fg:#f0dd9a;
-    --ok:#7fdc9d; --ok-bg:#16301f; --err:#ff9a9a; --err-bg:#3a1c1c; --warn-bg:#3a3014;
-  }
-}
+
+
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
@@ -69,6 +64,18 @@ small,.suave{color:var(--muted)}
 footer{max-width:960px;margin:0 auto;padding:12px 16px 28px;font-size:.85rem;color:var(--muted);border-top:1px solid var(--line)}
 footer input{width:260px;font-size:.85rem}
 footer button{font-size:.85rem;padding:3px 10px}
+
+main{max-width:1100px}
+footer{max-width:1100px}
+section:has(> nav){display:grid;grid-template-columns:190px minmax(0,1fr);column-gap:28px}
+section:has(> nav) > *{grid-column:2}
+section:has(> nav) > .top{grid-column:1 / -1}
+section:has(> nav) > nav{grid-column:1;grid-row:2 / span 20;align-self:start;flex-direction:column;flex-wrap:nowrap;margin:0;padding:0 16px 0 0;border-bottom:0;border-right:1px solid var(--line)}
+nav .btn{text-align:left}
+@media (max-width:700px){
+  section:has(> nav){display:block}
+  section:has(> nav) > nav{flex-direction:row;flex-wrap:wrap;padding:0 0 10px;margin-bottom:14px;border-right:0;border-bottom:1px solid var(--line)}
+}
 </style>
 </head>
 <body>
@@ -233,9 +240,8 @@ window.addEventListener("hashchange", route);
 function vInicio(){
   const r = rol();
   const botones = r
-    ? `<a class="btn prim" href="#/${homeDe(r)}">Ir a mi panel</a>`
-    : `<a class="btn prim" href="#/carta">Ver carta</a> <a class="btn prim" href="#/menu">Ver menú del día</a>
-       <a class="btn" href="#/login">Iniciar sesión</a> <a class="btn" href="#/registro">Registrarse</a>`;
+    ? `<a class="btn prim" href="#/${homeDe(r)}">Ir a mi panel</a>`: ``;
+    
   pinta(pantalla("P1", "Sabor del Himalaya - Inicio", `
     <div class="hero"><h2>Cocina nepalí a domicilio</h2>
       <p class="suave">Consulte la carta, el menú del día y haga su pedido desde casa.</p></div>
